@@ -1,18 +1,22 @@
 Project Part 2
 
+Note: All python code in this project requires a valid installation of pybrain on python 2.7
+
+
 DIRECTORY STRUCTURE
 -------------------
-
 In this directory are three sub-directories, each containing three items.
   1. a python script that cleans and prepares the data for pybrain to use
   2. the original dataset, denoted <dataset>_dirty.data
   3. the cleaned dataset, denoted <dataset>_clean.data - CSV format
 
 
+
 RUNNING THE SCRIPTS
 -------------------
 All three python scripts can be run in the same manner:
 python <scriptname>.py <dirty_data_filename> <clean_output_filename>
+
 
 
 ABOUT THE CODE

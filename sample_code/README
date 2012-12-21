@@ -1,0 +1,11 @@
+Note: All python code in this project requires a valid installation of pybrain on python 2.7
+
+
+To run our proof-of-testing script that will load in a sample CSV file into pybrain's modules, run the following command:
+
+python testInput.py <input_dataset> <number_of_attributes> <number_of_classes>
+
+
+Example:
+The abalone entries have 3 classes, and non-class attributes. So to run with this dataset, the command is:
+python testInput.py abalone_clean.data 8 3
