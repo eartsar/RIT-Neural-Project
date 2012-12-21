@@ -1,16 +1,31 @@
 Project Part 2
 
+DIRECTORY STRUCTURE
+-------------------
+
 In this directory are three sub-directories, each containing three items.
   1. a python script that cleans and prepares the data for pybrain to use
   2. the original dataset, denoted <dataset>_dirty.data
   3. the cleaned dataset, denoted <dataset>_clean.data - CSV format
 
-All three python scripts can be run in the same manner
+
+RUNNING THE SCRIPTS
+-------------------
+All three python scripts can be run in the same manner:
 python <scriptname>.py <dirty_data_filename> <clean_output_filename>
 
+
+ABOUT THE CODE
+--------------
 The code is commented, and can be re-run to see it work. Much of the code is the same between the three scripts, but there was little point in making the code robust and clean when it would only be run three times. Thus, each dataset has its own script to clean and prepare it.
 
 The preparation functions centralize and normalize the data, as well as split the classification column into N number of columns, where N is the number of classifications. These new classification columsn contain a 1 (if it is the correct classifier) or a 0 (if incorrect). These classification columns take up the last N columns in each row. The changes are listed below:
 
 Abalone Dataset:
 Classifications are M, F, and I. The last three columsn are represented as {1, 0, 0} for M, {0, 1, 0} for F, and {0, 0, 1} for I.
+
+Yeast Dataset:
+Classifications are acronyms that describe the localization site of the bacteria. There are ten discrete classes, so each row will contain ten class columns, one of which contains a zero. For example, the yeast class CYT is represented as the vector {1, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
+Poker Dataset:
+Classifications are represented as an ordinal value (0-9). For example, a zero represents a garbage hand (not containing a recognized poker hand, such as a pair), and would be represented as the vector {1, 0, 0, 0, 0, 0, 0, 0, 0, 0}
