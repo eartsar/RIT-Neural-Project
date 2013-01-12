@@ -1,6 +1,7 @@
 Directories contained:
 datasets - contains the data sets, and the scrips used to clean them. Also contains a specific readme that pertains only to those files
 documents - contains our writeups
+networks- contains pickle files containing trained networks and data from training
 sample_code - contains the code that shows we can read in from a dataset into pybrain's structures
 
 Note: All python code in this project requires a valid installation of pybrain on python 2.7

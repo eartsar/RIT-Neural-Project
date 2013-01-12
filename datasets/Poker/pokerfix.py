@@ -103,49 +103,17 @@ def get_mean(entries, attribute_index):
     return mean
 
 
-def split_classes(entries):
+def add_class_data(entries):
     """
-    Function that splits a class column into multiple columns
+    Addes meta data for class names    
     """
-    attrib_list = []
-    classes_list = []
-    ret_list = []
-
-    for entry in entries:
-        items = entry.split(',')
-        attrib_list = items[:-1]
-
-        classification = items[-1]
-        if classification == '0':
-            classes_list = ['1', '0', '0', '0', '0', '0', '0', '0', '0', '0']
-        elif classification == '1':
-            classes_list = ['0', '1', '0', '0', '0', '0', '0', '0', '0', '0']
-        elif classification == '2':
-            classes_list = ['0', '0', '1', '0', '0', '0', '0', '0', '0', '0']
-        elif classification == '3':
-            classes_list = ['0', '0', '0', '1', '0', '0', '0', '0', '0', '0']
-        elif classification == '4':
-            classes_list = ['0', '0', '0', '0', '1', '0', '0', '0', '0', '0']
-        elif classification == '5':
-            classes_list = ['0', '0', '0', '0', '0', '1', '0', '0', '0', '0']
-        elif classification == '6':
-            classes_list = ['0', '0', '0', '0', '0', '0', '1', '0', '0', '0']
-        elif classification == '7':
-            classes_list = ['0', '0', '0', '0', '0', '0', '0', '1', '0', '0']
-        elif classification == '8':
-            classes_list = ['0', '0', '0', '0', '0', '0', '0', '0', '1', '0']
-        elif classification == '9':
-            classes_list = ['0', '0', '0', '0', '0', '0', '0', '0', '0', '1']
-
-        full_list = (attrib_list[:] + classes_list[:])
-        entry_rebuild = ','.join(full_list)
-        ret_list.append(entry_rebuild)
-    return ret_list
+    entries.insert(0,'!labels:,Nothing,OnePair,TwoPair,ThreeOfAKind,Straight,Flush,FullHouse,FourOfAKind,StraightFlush,RoyalFlush')
+    return entries
 
 
 def main():
     if len(sys.argv) != 3:
-        print 'Usage: python abafix.py <input_filename> <output_filename'
+        print 'Usage: python pokerfix.py <input_filename> <output_filename'
         return 1
 
     # Load the file
@@ -153,7 +121,7 @@ def main():
     # normalize the non-classifier column
     entries = normalize_fields(entries)
     # split the classifier into multiple columns for neural net output vector
-    entries = split_classes(entries)
+    entries = add_class_data(entries)
     # write the fixed data
     write_file(entries, sys.argv[2])
 

@@ -102,12 +102,13 @@ def get_mean(entries, attribute_index):
     return mean
 
 
-def split_classes(entries):
+def convert_classes(entries):
     """
-    Function that splits a class column into multiple columns
+    Function that converts classes to numeric class labels
+        and addes meta data for class names
     """
     attrib_list = []
-    classes_list = []
+    classLabel = None
     ret_list = []
 
     for entry in entries:
@@ -116,18 +117,20 @@ def split_classes(entries):
 
         classification = items[-1]
         if classification is 'M':
-            classes_list = ['1', '0', '0']
+            classLabel = '0'
         elif classification is 'F':
-            classes_list = ['0', '1', '0']
+            classLabel = '1'
         elif classification is 'I':
-            classes_list = ['0', '0', '1']
+            classLabel = '2'
 
-        full_list = (attrib_list[:] + classes_list[:])
+        full_list = attrib_list[:]+[classLabel]
         entry_rebuild = ''
         for item in full_list:
             entry_rebuild = entry_rebuild + item + ','
         entry_rebuild = entry_rebuild[:-1]
         ret_list.append(entry_rebuild)
+
+    ret_list.insert(0,'!labels:,M,F,I')
     return ret_list
 
 
@@ -143,7 +146,7 @@ def main():
     # normalize the non-classifier column
     entries = normalize_fields(entries)
     # split the classifier into multiple columns for neural net output vector
-    entries = split_classes(entries)
+    entries = convert_classes(entries)
     # write the fixed data
     write_file(entries, sys.argv[2])
 

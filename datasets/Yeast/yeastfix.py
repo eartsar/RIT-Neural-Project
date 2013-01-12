@@ -104,12 +104,13 @@ def get_mean(entries, attribute_index):
     return mean
 
 
-def split_classes(entries):
+def convert_classes(entries):
     """
-    Function that splits a class column into multiple columns
+    Function that converts classes to numeric class labels
+    and addes meta data for class names
     """
     attrib_list = []
-    classes_list = []
+    classLabel = []
     ret_list = []
 
     for entry in entries:
@@ -118,29 +119,30 @@ def split_classes(entries):
 
         classification = items[-1]
         if classification == 'CYT':
-            classes_list = ['1', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+            classLabel = '0'
         elif classification == 'NUC':
-            classes_list = ['0', '1', '0', '0', '0', '0', '0', '0', '0', '0']
+            classLabel = '1'
         elif classification == 'MIT':
-            classes_list = ['0', '0', '1', '0', '0', '0', '0', '0', '0', '0']
+            classLabel = '2'
         elif classification == 'ME3':
-            classes_list = ['0', '0', '0', '1', '0', '0', '0', '0', '0', '0']
+            classLabel = '3'
         elif classification == 'ME2':
-            classes_list = ['0', '0', '0', '0', '1', '0', '0', '0', '0', '0']
+            classLabel = '4'
         elif classification == 'ME1':
-            classes_list = ['0', '0', '0', '0', '0', '1', '0', '0', '0', '0']
+            classLabel = '5'
         elif classification == 'EXC':
-            classes_list = ['0', '0', '0', '0', '0', '0', '1', '0', '0', '0']
+            classLabel = '6'
         elif classification == 'VAC':
-            classes_list = ['0', '0', '0', '0', '0', '0', '0', '1', '0', '0']
+            classLabel = '7'
         elif classification == 'POX':
-            classes_list = ['0', '0', '0', '0', '0', '0', '0', '0', '1', '0']
+            classLabel = '8'
         elif classification == 'ERL':
-            classes_list = ['0', '0', '0', '0', '0', '0', '0', '0', '0', '1']
+            classLabel = '9'
 
-        full_list = (attrib_list[:] + classes_list[:])
+        full_list = attrib_list[:] + [classLabel]
         entry_rebuild = ','.join(full_list)
         ret_list.append(entry_rebuild)
+    ret_list.insert(0,'!labels:,CYT,NUC,MIT,ME3,ME2,ME1,EXC,VAC,POX,ERL')
     return ret_list
 
 
@@ -154,7 +156,7 @@ def main():
     # normalize the non-classifier column
     entries = normalize_fields(entries)
     # split the classifier into multiple columns for neural net output vector
-    entries = split_classes(entries)
+    entries = convert_classes(entries)
     # write the fixed data
     write_file(entries, sys.argv[2])
 
