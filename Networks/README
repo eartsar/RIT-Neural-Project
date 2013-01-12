@@ -1,0 +1,16 @@
+Name: MLPBuilder.py
+
+Usage: python MLPBuilder.py <input_filename> <network_name> <num_attributes> <num_classifications> <num_hidden_nodes>
+
+Constructs a Feed Forward Network with one hidden layer and stores it in a pickle file in the current directory.
+Creates two pickle files. One for the network and the other for data related to the network.
+The file networkname+'_network.pkl' stores the network.
+The file networkname+'_data.pkl' stores the data.
+Data consists of the training data, testing data, and error at each epoch stored into a dictionary
+	with the keywords  'train', 'test', and 'errors' respectively
+
+<input_filename> - The CSV file containing the training data
+<network_name> - The name of the network. The network name is contained in the output pickle files' names.
+<num_attributes> - Number of attributes in the CSV file.
+<num_classifications> - Number of classes.
+<num_hidden_nodes> - Number of hidden nodes in the network's hidden layer.
