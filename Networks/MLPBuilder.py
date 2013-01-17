@@ -1,15 +1,16 @@
 from InputCSV import *
 from pybrain.structure import FeedForwardNetwork
-from pybrain.structure import LinearLayer, SigmoidLayer
+from pybrain.structure import LinearLayer, SigmoidLayer, TanhLayer
 from pybrain.structure import FullConnection
 from pybrain.utilities import percentError
 from pybrain.supervised.trainers import BackpropTrainer
 import sys
 import cPickle
 
-def buildMLP(dataSet,num_hidden):
+
+def buildMLP(dataSet, num_hidden):
     '''
-    Function that builds a feed forward network based 
+    Function that builds a feed forward network based
     on the datset inputed.
     The hidden layer has nodes equal to about half the number of inputs.
     '''
@@ -26,8 +27,8 @@ def buildMLP(dataSet,num_hidden):
     network.addOutputModule(outputLayer)
 
     #create connections between layers
-    inToHidden = FullConnection(inputLayer,hiddenLayer)
-    hiddenToOut = FullConnection(hiddenLayer,outputLayer)
+    inToHidden = FullConnection(inputLayer, hiddenLayer)
+    hiddenToOut = FullConnection(hiddenLayer, outputLayer)
 
     #add connections to the network
     network.addConnection(inToHidden)
@@ -36,17 +37,37 @@ def buildMLP(dataSet,num_hidden):
     network.sortModules()
     return network
 
-def trainNetwork(network,trainData,maxEpochs = None, verbose = False):
+
+def findSumSquredError(output, target):
+    error = 0
+    for i in range(len(output)):
+        for j in range(len(output[i])):
+            error = error + ((output[i][j] - target[i][j]) ** 2)
+    return error
+
+
+def trainNetwork(network, trainData, maxEpochs=None, verbose=False):
     '''
     Trains the inputed network on the training data until convergence.
     Optionaly maxEpochs can be set to put an uperbound on the number of epochs.
     Returns an Array of the training error at each epoch.
     '''
-    trainer = BackpropTrainer( network, dataset=trainData, verbose= verbose)
-    trainErrors,valErrors = trainer.trainUntilConvergence(maxEpochs = maxEpochs, verbose = verbose)
+    trainer = BackpropTrainer(network, dataset=trainData, verbose=verbose, learningrate=0.05)
+    trainErrors = []
+    #trainErrors,valErrors = trainer.trainUntilConvergence(maxEpochs = maxEpochs, verbose = verbose)
+    sse = 1
+    i = 1
+    while sse > 0.01 and trainer.totalepochs <= maxEpochs:
+        trainer.train()
+        output = network.activateOnDataset(trainData)
+        sse = findSumSquredError(output, trainData['target'])
+        trainErrors.append(sse)
+        print 'SSE(', i, '): ', sse
+        i += 1
     return trainErrors
 
-def saveNetworkAndData(networkName,network,trainData=None,testData=None,epochErrors=None):
+
+def saveNetworkAndData(networkName, network, trainData=None, testData=None, epochErrors=None):
     '''
     Creates two pickle files. One for the network and the other for data related to the network.
     The file networkname+'_network.pkl' stores the network.
@@ -54,13 +75,14 @@ def saveNetworkAndData(networkName,network,trainData=None,testData=None,epochErr
     Data consists of the training data, testing data, and error at each epoch stored into a dictionary
         with the keywords  'train', 'test', and 'errors' respectively
     '''
-    pickleFile = open(networkName+"_network.pkl",'wb')
-    cPickle.dump(network,pickleFile)
+    pickleFile = open(networkName + "_network.pkl", 'wb')
+    cPickle.dump(network, pickleFile)
     pickleFile.close()
-    networkData = {'train':trainData,'test':testData,'errors':epochErrors}
-    pickleFile = open(networkName+"_data.pkl",'wb')
-    cPickle.dump(networkData,pickleFile)
+    networkData = {'train': trainData, 'test': testData, 'errors': epochErrors}
+    pickleFile = open(networkName + "_data.pkl", 'wb')
+    cPickle.dump(networkData, pickleFile)
     pickleFile.close()
+
 
 def main():
     if len(sys.argv) != 6:
@@ -73,13 +95,15 @@ def main():
     num_classifications = int(sys.argv[4])
     num_hidden = int(sys.argv[5])
     csv_importer = CSVImporter()
-    dataSet = csv_importer.importFromCSV(input_filename, num_attributes, num_classifications)
-    tstdata, trndata = dataSet.splitWithProportion( 0.25 )
+    dataSet = csv_importer.importFromCSV(
+        input_filename, num_attributes, num_classifications)
+    tstdata, trndata = dataSet.splitWithProportion(0.25)
     tstdata._convertToOneOfMany()
     trndata._convertToOneOfMany()
-    network = buildMLP(trndata,num_hidden)
-    epochErrors = trainNetwork(network,trndata,maxEpochs=500,verbose=True )
-    saveNetworkAndData(network_name,network,trndata,tstdata,epochErrors)
+    network = buildMLP(trndata, num_hidden)
+    epochErrors = trainNetwork(
+        network, trndata, maxEpochs=1000, verbose=False)
+    saveNetworkAndData(network_name, network, trndata, tstdata, epochErrors)
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,7 @@
 from pybrain.datasets import ClassificationDataSet
 
+class Whatever:
+    pass
 
 class CSVImporter:
     def importFromCSV(self, fileName, numInputs, numClasses):
