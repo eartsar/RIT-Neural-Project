@@ -4,8 +4,11 @@ import matplotlib.pyplot as plt
 from pybrain.tools.validation import Validator
 
 def plotTrainingError(data):
-	plt.figure(0)
-	plt.plot(data['errors'])
+	fig = plt.figure(0)
+	fig.suptitle('Mean Squared Error vs Number of Epochs')
+	plt.xlabel('Number of Epochs')
+	plt.ylabel('Mean Squared Error')
+	plt.plot(data['errors'][:-1])
 	plt.show()
 
 def findClassificationRates(network,data):
@@ -14,32 +17,26 @@ def findClassificationRates(network,data):
 
 	#Find the classification rate on the Test Set
 	out = network.activateOnDataset(testSet)
-	#Find MSE on Test Set
-	mse = Validator.MSE(out,testSet['target'])
-	print 'MSE(TEST):',mse
 	out = out.argmax(axis = 1) 
 	correct = 0
 	for i in range(len(out)):
 		if testSet['class'][i] == out[i]:
 			correct += 1
 	crTest = float(correct)/len(out)
+	numCorrectTest = correct
+	numIncorrectTest = len(out)-correct
 
 	#Find the classification rate on the Training Set
 	out = network.activateOnDataset(trainSet)
-	print out
-	print trainSet['target']
-	org = out
-	mse = Validator.ESS(out,trainSet['target'])
-	print 'MSE(Train):',mse, data['errors'][-1]
 	out = out.argmax(axis = 1) 
 	correct = 0
 	for i in range(len(out)):
-		mse = Validator.MSE(org[i],trainSet['target'][i])
-		#print 'MSE ',i,':',mse
 		if trainSet['class'][i] == out[i]:
 			correct += 1
 	crTrain = float(correct)/len(out)
+	print "Correct Classification - Incorrect Classification(Test):",numCorrectTest,numIncorrectTest 
 	print "Classification Rate(Test):", crTest
+	print "Correct Classification - Incorrect Classification(Train):",correct,(len(out)-correct) 
 	print "Classification Rate(Train):", crTrain
 
 def main():
@@ -53,7 +50,7 @@ def main():
 	data = cPickle.load(networkDataFile)
 	networkFile.close()
 	networkDataFile.close()
-	#plotTrainingError(data)
+	plotTrainingError(data)
 	findClassificationRates(network,data)
 
 if __name__ == '__main__':
