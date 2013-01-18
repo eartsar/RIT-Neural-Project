@@ -9,7 +9,7 @@ from pybrain.supervised.trainers import BackpropTrainer
 import sys
 import cPickle
 
-def dBuildMLP(dataSet, num_hidden):
+def standardBuildMLP(dataSet, num_hidden):
     net = buildNetwork(dataSet.indim, num_hidden, dataSet.outdim, bias=True, outclass=SigmoidLayer)
     return net
 
@@ -119,9 +119,9 @@ def main():
     tstdata, trndata = dataSet.splitWithProportion(0.25)
     tstdata._convertToOneOfMany()
     trndata._convertToOneOfMany()
-    network = dBuildMLP(trndata, num_hidden)
+    network = standardBuildMLP(trndata, num_hidden)
     epochErrors = trainNetwork(
-        network, trndata, maxEpochs=200, verbose=True)
+        network, trndata, maxEpochs=1000, verbose=True)
     saveNetworkAndData(network_name, network, trndata, tstdata, epochErrors)
 
 if __name__ == '__main__':
