@@ -1,18 +1,23 @@
 from InputCSV import *
 from pybrain.structure import FeedForwardNetwork
-from pybrain.structure import LinearLayer, SigmoidLayer, TanhLayer
+from pybrain.structure import LinearLayer, SigmoidLayer, TanhLayer, BiasUnit
 from pybrain.structure import FullConnection
 from pybrain.utilities import percentError
+from time import clock
+from pybrain.tools.shortcuts import buildNetwork
 from pybrain.supervised.trainers import BackpropTrainer
 import sys
 import cPickle
 
+def dBuildMLP(dataSet, num_hidden):
+    net = buildNetwork(dataSet.indim, num_hidden, dataSet.outdim, bias=True, outclass=SigmoidLayer)
+    return net
 
 def buildMLP(dataSet, num_hidden):
     '''
     Function that builds a feed forward network based
     on the datset inputed.
-    The hidden layer has nodes equal to about half the number of inputs.
+    The hidden layer has nodes equal to num_hidden.
     '''
     #make the network
     network = FeedForwardNetwork()
@@ -26,9 +31,16 @@ def buildMLP(dataSet, num_hidden):
     network.addModule(hiddenLayer)
     network.addOutputModule(outputLayer)
 
+    #add bias
+    network.addModule(BiasUnit(name='bias'))
+
     #create connections between layers
     inToHidden = FullConnection(inputLayer, hiddenLayer)
     hiddenToOut = FullConnection(hiddenLayer, outputLayer)
+
+    #connect bias
+    network.addConnection(FullConnection(network['bias'], outputLayer))
+    network.addConnection(FullConnection(network['bias'], hiddenLayer))
 
     #add connections to the network
     network.addConnection(inToHidden)
@@ -52,9 +64,15 @@ def trainNetwork(network, trainData, maxEpochs=None, verbose=False):
     Optionaly maxEpochs can be set to put an uperbound on the number of epochs.
     Returns an Array of the training error at each epoch.
     '''
-    trainer = BackpropTrainer(network, dataset=trainData, verbose=verbose, learningrate=0.05)
+    trainer = BackpropTrainer(network, dataset=trainData, verbose=verbose, learningrate=0.1)
     trainErrors = []
-    #trainErrors,valErrors = trainer.trainUntilConvergence(maxEpochs = maxEpochs, verbose = verbose)
+    start = clock()
+    trainErrors,valErrors = trainer.trainUntilConvergence(maxEpochs = maxEpochs, verbose = verbose)
+    end = clock()
+    elapsed = end - start
+    print 'Start, End:',start,':',end
+    print 'Elapsed:',elapsed
+    '''
     sse = 1
     i = 1
     while sse > 0.01 and trainer.totalepochs <= maxEpochs:
@@ -64,6 +82,7 @@ def trainNetwork(network, trainData, maxEpochs=None, verbose=False):
         trainErrors.append(sse)
         print 'SSE(', i, '): ', sse
         i += 1
+    '''
     return trainErrors
 
 
@@ -100,9 +119,9 @@ def main():
     tstdata, trndata = dataSet.splitWithProportion(0.25)
     tstdata._convertToOneOfMany()
     trndata._convertToOneOfMany()
-    network = buildMLP(trndata, num_hidden)
+    network = dBuildMLP(trndata, num_hidden)
     epochErrors = trainNetwork(
-        network, trndata, maxEpochs=1000, verbose=False)
+        network, trndata, maxEpochs=200, verbose=True)
     saveNetworkAndData(network_name, network, trndata, tstdata, epochErrors)
 
 if __name__ == '__main__':

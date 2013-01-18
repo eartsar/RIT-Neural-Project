@@ -9,15 +9,13 @@ Author: Eitan Romanoff
 
 def load_file(filename):
     """
-    Function that loads in the yeast file, and converts it to CSV format.
-    Furthermore, we cut out the first attribute because it's unique.
+    Function that loads in the abalone CSV file
     """
     lines = []
     in_file = open(filename)
     for line in in_file:
         line = line.strip()
-        csvline = ','.join(line.split()[1:])
-        lines.append(csvline)
+        lines.append(line)
     in_file.close()
     return lines
 
@@ -42,6 +40,7 @@ def move_classifier(entries):
         entry = entry[2:] + ',' + pre
         entries[line_num] = entry
     return entries
+
 
 def normalize_fields(entries):
     """
@@ -106,52 +105,22 @@ def get_mean(entries, attribute_index):
 def convert_classes(entries):
     """
     Function that converts classes to numeric class labels
-    and addes meta data for class names
+        and addes meta data for class names
     """
-    attrib_list = []
-    classLabel = []
-    ret_list = []
 
-    for entry in entries:
-        items = entry.split(',')
-        attrib_list = items[:-1]
-
-        classification = items[-1]
-        if classification == 'CYT':
-            classLabel = '0'
-        elif classification == 'NUC':
-            classLabel = '1'
-        elif classification == 'MIT':
-            classLabel = '2'
-        elif classification == 'ME3':
-            classLabel = '3'
-        elif classification == 'ME2':
-            classLabel = '4'
-        elif classification == 'ME1':
-            classLabel = '5'
-        elif classification == 'EXC':
-            classLabel = '6'
-        elif classification == 'VAC':
-            classLabel = '7'
-        elif classification == 'POX':
-            classLabel = '8'
-        elif classification == 'ERL':
-            classLabel = '9'
-
-        full_list = attrib_list[:] + [classLabel]
-        entry_rebuild = ','.join(full_list)
-        ret_list.append(entry_rebuild)
-    ret_list.insert(0,'!labels:,CYT,NUC,MIT,ME3,ME2,ME1,EXC,VAC,POX,ERL')
-    return ret_list
+    entries.insert(0,'!labels:,No,Yes')
+    return entries
 
 
 def main():
     if len(sys.argv) != 3:
-        print 'Usage: python abafix.py <input_filename> <output_filename>'
+        print 'Usage: python abafix.py <input_filename> <output_filename'
         return 1
 
     # Load the file
     entries = load_file(sys.argv[1])
+    # move the classifier column
+    #entries = move_classifier(entries)
     # normalize the non-classifier column
     entries = normalize_fields(entries)
     # split the classifier into multiple columns for neural net output vector
