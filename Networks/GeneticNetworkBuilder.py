@@ -94,7 +94,7 @@ def main():
     tstdata, trndata = dataSet.splitWithProportion(0.25)
     tstdata._convertToOneOfMany()
     trndata._convertToOneOfMany()
-    network,epochErrors = buildAndTrainNetwork(trndata,num_hidden,numEpochs=5, popsize =10)
+    network,epochErrors = buildAndTrainNetwork(trndata,num_hidden,numEpochs=50, popsize =100)
     saveNetworkAndData(network_name, network, trndata, tstdata, epochErrors)
 
 if __name__ == '__main__':
