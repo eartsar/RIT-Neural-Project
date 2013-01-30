@@ -2,7 +2,6 @@ from InputCSV import *
 from pybrain.structure import FeedForwardNetwork
 from pybrain.structure import LinearLayer, SigmoidLayer, TanhLayer, BiasUnit
 from pybrain.structure import FullConnection
-from pybrain.utilities import percentError
 from time import clock
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.supervised.trainers import BackpropTrainer

@@ -51,7 +51,7 @@ def makePopulation(popsize,size):
       
             
 def sortPop(Pop):
-      Pop.sort(key = lambda x: x.Fitness, reverse = True)
+      Pop.sort(key = lambda x: x.Fitness)
      
 def breedPop(Pop, per):
       topNum = (int)(len(Pop) * per)

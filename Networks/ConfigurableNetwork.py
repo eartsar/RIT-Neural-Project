@@ -44,17 +44,17 @@ def test2():
       
       #Import in the yeast Dataset
       csv_importer = CSVImporter()
-      dataSet = csv_importer.importFromCSV("Data/Yeast/yeast_clean.data", numInputs, numOutputs)
+      dataSet = csv_importer.importFromCSV("../datasets/Yeast/yeast_clean.data", numInputs, numOutputs)
       tstdata, trndata = dataSet.splitWithProportion(0.25)
       tstdata._convertToOneOfMany()
       trndata._convertToOneOfMany()
 
       #Create a Configurable Network and test out its methods
-      configNet = ConfigurableNetwork(tstdata,numHidden)
+      configNet = ConfigurableNetwork(trndata,numHidden)
 
-      numEpochs = 1
+      numEpochs = 50
 
-      popsize = 10
+      popsize = 100
       #this assumes only a single hidden layer
       numConnections = numInputs * numOutputs * numHidden
       
@@ -70,19 +70,20 @@ def test2():
 
                   f = configNet.findError()
 
-                  Population[j].fitness = f
+                  Population[j].Fitness = f
 
             sortPop(Population)
 
-            error[i] = Population[0].fitness
-
+            error[i] = Population[0].Fitness
+            print "Error at",i,':',[Population[x].Fitness for x in range(10)] 
             Population = breedPop(Population, .1)
       
             Population = mutate(Population, .1)
+            
 
-      print("Best weights: \n", Population[0].Weights)
-      print("Best connections: \n", Population[0].OnOff)
-      print("Best fitness: \n", Population[0].fitness)
+      #print("Best weights: \n", Population[0].Weights)
+      #print("Best connections: \n", Population[0].OnOff)
+      print("Best fitness: \n", Population[0].Fitness)
       print("Error across epochs: \n", error)
 
             
