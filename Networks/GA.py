@@ -100,7 +100,7 @@ def makeChild(p1, p2):
                   newW.append(p2.Weights[i])
 
             if i < xOvrOO:
-                  newOO.append(p2.OnOff[i])
+                  newOO.append(p1.OnOff[i])
             else:
                   newOO.append(p2.OnOff[i])
 

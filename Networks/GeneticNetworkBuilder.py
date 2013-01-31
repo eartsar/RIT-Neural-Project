@@ -46,9 +46,9 @@ def buildAndTrainNetwork(trndata, numHidden, numEpochs=100, popsize =100):
                   Population[j].Fitness = f
 
             sortPop(Population)
-
-            error[i] = Population[0].Fitness
-            print "Top 5 error at",i,':',[Population[x].Fitness for x in range(5)] 
+            configNet.configureNetwork(Population[0].Weights, Population[0].OnOff)
+            error[i] = configNet.findMSE()
+            print "Lowest 5 error count at",i,':',[Population[x].Fitness for x in range(5)] 
             
       configNet.configureNetwork(Population[0].Weights, Population[0].OnOff)
 
@@ -59,7 +59,6 @@ def buildAndTrainNetwork(trndata, numHidden, numEpochs=100, popsize =100):
       print 'Elapsed:',elapsed
 
       print("Best fitness: \n", Population[0].Fitness)
-      print("Error across epochs: \n", error)
       return configNet.net,error
 
 def saveNetworkAndData(networkName, network, trainData=None, testData=None, epochErrors=None):

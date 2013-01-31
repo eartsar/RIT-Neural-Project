@@ -1,4 +1,4 @@
-import MLPBuilder
+from pybrain.tools.validation import Validator
 import scipy
 from InputCSV import *
 from GA import *
@@ -33,9 +33,19 @@ class ConfigurableNetwork:
             for i in range(len(self.net.params)):
                   self.net.params[i] = updatedParams[i]
 
+      def findMSE(self):
+            out = self.net.activateOnDataset(self.data)
+            meanSquaredError = Validator.MSE(out,self.data['target'])
+            return meanSquaredError
+
       def findError(self):
-            output = self.net.activateOnDataset(self.data)
-            return MLPBuilder.findSumSquredError(output, self.data['target'])
+            out = self.net.activateOnDataset(self.data)
+            out = out.argmax(axis = 1) 
+            errors = 0
+            for i in range(len(out)):
+                  if self.data['class'][i] != out[i]:
+                        errors += 1
+            return errors
 
 def test2():
       numInputs = 8
