@@ -2,7 +2,6 @@ import sys
 from InputCSV import *
 from ConfigurableNetwork import *
 from time import clock
-import sys
 import cPickle
 
 def buildAndTrainNetwork(trndata, numHidden, numEpochs=100, popsize =100):
@@ -28,7 +27,8 @@ def buildAndTrainNetwork(trndata, numHidden, numEpochs=100, popsize =100):
           f = configNet.findError()
           Population[j].Fitness = f
       sortPop(Population)
-      error[0] = Population[0].Fitness
+      configNet.configureNetwork(Population[0].Weights, Population[0].OnOff)
+      error[0] = configNet.findMSE()
       print "Top 5 error at 0:",[Population[x].Fitness for x in range(5)]
 
       for i in range(1, numEpochs):

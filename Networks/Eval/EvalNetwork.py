@@ -1,7 +1,6 @@
 import cPickle
 import sys
 import matplotlib.pyplot as plt
-from pybrain.tools.validation import Validator
 
 def plotTrainingError(data):
 	fig = plt.figure(0)
