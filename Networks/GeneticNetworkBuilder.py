@@ -4,62 +4,64 @@ from ConfigurableNetwork import *
 from time import clock
 import cPickle
 
-def buildAndTrainNetwork(trndata, numHidden, numEpochs=100, popsize =100):
 
-      #Create a Configurable Network
-      configNet = ConfigurableNetwork(trndata,numHidden)
-      numInputs = trndata.indim
-      numOutputs = trndata.outdim
+def buildAndTrainNetwork(trndata, numHidden, numEpochs=100, popsize=100):
 
-      #this assumes only a single hidden layer
-      numConnections = numInputs * numOutputs * numHidden
-      
-      Population = makePopulation(popsize,numConnections)
-      error = [0] * numEpochs
+    # Create a Configurable Network
+    configNet = ConfigurableNetwork(trndata, numHidden)
+    numInputs = trndata.indim
+    numOutputs = trndata.outdim
 
-      #Start the clock
-      start = clock()
+    # this assumes only a single hidden layer
+    numConnections = numInputs * numOutputs * numHidden
 
-      #Initialize network fitness
-      for j in range(0, popsize):
-          curMember = Population[j]
-          configNet.configureNetwork(curMember.Weights, curMember.OnOff)
-          f = configNet.findError()
-          Population[j].Fitness = f
-      sortPop(Population)
-      configNet.configureNetwork(Population[0].Weights, Population[0].OnOff)
-      error[0] = configNet.findMSE()
-      print "Top 5 error at 0:",[Population[x].Fitness for x in range(5)]
+    Population = makePopulation(popsize, numConnections)
+    error = [0] * numEpochs
 
-      for i in range(1, numEpochs):
+    # Start the clock
+    start = clock()
 
-            Population = breedPop(Population, .1)
-            Population = mutate(Population, .1)
+    # Initialize network fitness
+    for j in range(0, popsize):
+        curMember = Population[j]
+        configNet.configureNetwork(curMember.Weights, curMember.OnOff)
+        f = configNet.findError()
+        Population[j].Fitness = f
+    sortPop(Population)
+    configNet.configureNetwork(Population[0].Weights, Population[0].OnOff)
+    error[0] = configNet.findMSE()
+    print "Top 5 error at 0:", [Population[x].Fitness for x in range(5)]
 
-            for j in range(0, popsize):
-                  curMember = Population[j]
+    for i in range(1, numEpochs):
 
-                  configNet.configureNetwork(curMember.Weights, curMember.OnOff)
+        Population = breedPop(Population, .1)
+        Population = mutate(Population, .1)
 
-                  f = configNet.findError()
+        for j in range(0, popsize):
+            curMember = Population[j]
 
-                  Population[j].Fitness = f
+            configNet.configureNetwork(curMember.Weights, curMember.OnOff)
 
-            sortPop(Population)
-            configNet.configureNetwork(Population[0].Weights, Population[0].OnOff)
-            error[i] = configNet.findMSE()
-            print "Lowest 5 error count at",i,':',[Population[x].Fitness for x in range(5)] 
-            
-      configNet.configureNetwork(Population[0].Weights, Population[0].OnOff)
+            f = configNet.findError()
 
-      #Stop the clock
-      end = clock()
-      elapsed = end - start
-      print 'Start, End:',start,':',end
-      print 'Elapsed:',elapsed
+            Population[j].Fitness = f
 
-      print("Best fitness: \n", Population[0].Fitness)
-      return configNet.net,error
+        sortPop(Population)
+        configNet.configureNetwork(Population[0].Weights, Population[0].OnOff)
+        error[i] = configNet.findMSE()
+        print "Lowest 5 error count at", i, ':', [Population[x].Fitness for x in range(5)]
+
+    configNet.configureNetwork(Population[0].Weights, Population[0].OnOff)
+
+    # Stop the clock
+    end = clock()
+    elapsed = end - start
+    print 'Start, End:', start, ':', end
+    print 'Elapsed:', elapsed
+
+    print("Best fitness: \n", Population[0].Fitness)
+    return configNet.net, error
+
 
 def saveNetworkAndData(networkName, network, trainData=None, testData=None, epochErrors=None):
     '''
@@ -93,7 +95,7 @@ def main():
     tstdata, trndata = dataSet.splitWithProportion(0.25)
     tstdata._convertToOneOfMany()
     trndata._convertToOneOfMany()
-    network,epochErrors = buildAndTrainNetwork(trndata,num_hidden,numEpochs=50, popsize =100)
+    network, epochErrors = buildAndTrainNetwork(trndata, num_hidden, numEpochs=50, popsize=100)
     saveNetworkAndData(network_name, network, trndata, tstdata, epochErrors)
 
 if __name__ == '__main__':
